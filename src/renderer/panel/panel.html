@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sorteador - Painel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+    <div class="background-icons">
+        <i class="fas fa-book-reader"></i>
+        <i class="fas fa-graduation-cap"></i>
+        <i class="fas fa-award"></i>
+        <i class="fas fa-apple-alt"></i>
+    </div>
+
+    <div class="header-app">
+        <div class="app-title">
+            <i class="fas fa-award"></i>
+            <h1>Sorteio de Prêmios</h1>
+            <i class="fas fa-trophy"></i>
+        </div>
+        <p class="subtitle">Sistema de sorteio para premiação</p>
+    </div>
+
+    <div class="container">
+        <div class="card winners-card">
+            <div class="card-header">
+                <i class="fas fa-medal icon-header"></i>
+                <h2>Ganhadores (<span id="winner-count">0</span>)</h2>
+            </div>
+            <div class="card-body">
+                <ul id="winners-list"></ul>
+            </div>
+        </div>
+
+        <div class="card result-card">
+            <div class="card-header">
+                <i class="fas fa-trophy icon-header"></i>
+                <h2>Resultado do Sorteio</h2>
+            </div>
+            <div class="card-body result-body">
+                <div id="display-area">
+                    </div>
+            </div>
+            <div class="button-group">
+                <button id="btn-reset" class="secondary-button"><i class="fas fa-sync-alt"></i> Atualizar Lista</button>
+                <button id="btn-draw" class="primary-button" disabled><i class="fas fa-play"></i> Iniciar Sorteio</button>
+            </div>
+        </div>
+
+        <div class="card participants-card">
+            <div class="card-header">
+                <i class="fas fa-user-friends icon-header"></i>
+                <h2>Nomes Disponíveis (<span id="participant-count">0</span>)</h2>
+            </div>
+            <div class="card-body">
+                <ul id="participants-list"></ul>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="panel.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+:root { --primary-red: #D92323; --primary-red-dark: #A61C1C; --white: #FFFFFF; --light-grey: #f4f4f9; --dark-grey: #495057; --shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Roboto', sans-serif; background-color: var(--light-grey); display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px; }
+.modal-content { background-color: var(--white); padding: 40px; border-radius: 12px; box-shadow: var(--shadow); text-align: center; max-width: 500px; width: 100%; animation: fadeIn 0.5s ease-out; }
+.logo { max-width: 150px; margin-bottom: 24px; }
+h1 { font-size: 2em; color: var(--primary-red); margin-bottom: 8px; }
+p { font-size: 1.1em; color: var(--dark-grey); margin-bottom: 24px; }
+.hidden { display: none; }
+button { font-size: 16px; font-weight: 500; color: var(--white); background-color: var(--primary-red); border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; transition: background-color 0.2s ease, transform 0.2s ease; }
+button:hover { background-color: var(--primary-red-dark); transform: translateY(-2px); }
+button:disabled { background-color: #cccccc; cursor: not-allowed; transform: none; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;900&display=swap');
+
+:root {
+    --primary-red: #D92323;
+    --primary-red-dark: #A61C1C;
+    --white: #FFFFFF;
+    --light-bg: #F8F8F8;
+    --card-bg: #FFFFFF;
+    --text-color: #333;
+    --heading-color: #222;
+    --border-color: #EEE;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--light-bg);
+    color: var(--text-color);
+    overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(15px, 2vw, 25px);
+}
+
+.hidden { display: none !important; }
+
+/* --- Ícones de Fundo --- */
+.background-icons { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -1; pointer-events: none; opacity: 0.05; color: var(--primary-red); }
+.background-icons i { position: absolute; font-size: clamp(4vw, 8vw, 120px); animation: float 20s infinite ease-in-out; }
+@keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-25px) rotate(8deg); } 100% { transform: translateY(0px) rotate(0deg); } }
+
+/* --- Cabeçalho --- */
+.header-app { text-align: center; margin-bottom: clamp(20px, 3vh, 30px); width: 100%; flex-shrink: 0; }
+.app-title { display: flex; align-items: center; justify-content: center; gap: clamp(10px, 1.5vw, 20px); margin-bottom: 5px; color: var(--primary-red); }
+.app-title h1 { font-size: clamp(1.8em, 3.5vw, 3em); }
+.app-title i { font-size: clamp(1.6em, 3vw, 2.5em); }
+.subtitle { font-size: clamp(1em, 1.5vw, 1.2em); }
+
+/* --- Layout Principal --- */
+.container { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: clamp(15px, 2vw, 25px); width: 100%; max-width: 1800px; margin: 0 auto; flex-grow: 1; min-height: 0; }
+.card { background-color: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow); padding: clamp(20px, 2vw, 25px); display: flex; flex-direction: column; border: 1px solid var(--border-color); min-height: 0; }
+.card-header { display: flex; align-items: center; margin-bottom: clamp(15px, 2vh, 20px); padding-bottom: clamp(10px, 1.5vh, 15px); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+.card-header h2 { font-size: clamp(1.1em, 1.5vw, 1.4em); }
+.icon-header { font-size: clamp(1.2em, 1.6vw, 1.5em); color: var(--primary-red); }
+.card-body { flex-grow: 1; display: flex; flex-direction: column; min-height: 0; }
+
+/* --- Card de Resultado --- */
+.result-card .result-body { position: relative; align-items: center; justify-content: center; text-align: center; background-color: #fff9f9; border-radius: 10px; border: 1px dashed var(--primary-red); overflow: hidden; }
+#display-area { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding: clamp(10px, 2vw, 20px); }
+.result-card .large-icon { font-size: clamp(3.5em, 7vh, 6em); color: #e6b30e; }
+#winner-info-container { display: flex; flex-direction: column; gap: clamp(5px, 1.5vh, 15px); width: 100%; margin-top: clamp(10px, 2vh, 20px); }
+.initial-message { font-size: clamp(1.5em, 3vw, 2.5em); font-weight: 600; color: var(--heading-color); }
+.info-value { font-size: clamp(1.1em, 2vw, 1.8em); font-weight: 500; color: var(--text-color); line-height: 1.4; position: relative; padding: 5px 10px; }
+.info-value.name { font-size: clamp(2em, 4.5vw, 4.5em); font-weight: 900; color: var(--primary-red); }
+
+/* --- Tarjas --- */
+.cover { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #615f5f; border-radius: 8px; transition: transform 0.5s ease-in-out; transform-origin: left; }
+.cover.revealed { transform: scaleX(0); }
+
+/* --- SPINNER RGB (LEVE E ESTÁVEL) --- */
+.spinner {
+    width: clamp(100px, 12vmax, 150px);
+    height: clamp(100px, 12vmax, 150px);
+    border: 8px solid transparent;
+    border-radius: 50%;
+    border-top-color: var(--primary-red);
+    animation: spin 1s linear infinite, color-cycle 4s linear infinite;
+}
+
+@keyframes spin { 
+    to { transform: rotate(360deg); } 
+}
+
+@keyframes color-cycle {
+    0%   { border-top-color: #D92323; } /* Vermelho */
+    25%  { border-top-color: #2196F3; } /* Azul */
+    50%  { border-top-color: #4CAF50; } /* Verde */
+    75%  { border-top-color: #FFEB3B; } /* Amarelo */
+    100% { border-top-color: #D92323; } /* Volta ao Vermelho */
+}
+
+/* --- Botões e Listas --- */
+.result-card .button-group { display: flex; gap: clamp(10px, 1.5vw, 15px); margin-top: auto; padding-top: clamp(15px, 2vh, 20px); flex-shrink: 0; }
+button { font-family: 'Poppins', sans-serif; font-size: clamp(0.9em, 1.2vw, 1.1em); font-weight: 500; padding: clamp(10px, 1.5vh, 14px) clamp(15px, 2vw, 24px); border-radius: 8px; cursor: pointer; transition: all 0.2s ease; border: none; display: flex; align-items: center; justify-content: center; gap: clamp(5px, 0.8vw, 10px); flex-grow: 1; }
+.primary-button { background-color: var(--primary-red); color: var(--white); }
+.secondary-button { background-color: #F0F0F0; color: var(--text-color); }
+button:disabled { background-color: #cccccc; color: #888888; cursor: not-allowed; }
+ul { list-style-type: none; overflow-y: auto; min-height: 0; }
+li { background-color: var(--light-bg); padding: clamp(8px, 1vh, 12px) clamp(12px, 1.5vw, 15px); border-radius: 6px; margin-bottom: clamp(5px, 0.8vh, 8px); font-size: clamp(0.9em, 1.2vw, 1em); }
+.winners-card #winners-list { margin-bottom: 20px; }
+.winners-card #winners-list li { font-weight: 500; background-color: #e8f5e9; color: #2e7d32; display: flex; align-items: center; }
+.winner-number { font-weight: 700; margin-right: 10px; color: #1b5e20; }
+ul::-webkit-scrollbar { width: 8px; }
+
+/* --- Media Query --- */
+@media (max-width: 1024px) {
+    body { overflow-y: auto; }
+    .container { grid-template-columns: 1fr; height: auto; }
+}
