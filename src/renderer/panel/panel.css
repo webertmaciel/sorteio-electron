@@ -10,6 +10,15 @@
     --heading-color: #222;
     --border-color: #EEE;
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    /* Cores Neon (Variáveis Globais para fácil acesso e modificação) */
+    --neon-magenta: #FF00FF;
+    --neon-cyan: #00FFFF;
+    --neon-green: #00FF00;
+    --neon-yellow: #FFFF00;
+    --neon-orange: #FF4500;
+    --neon-purple: #9400D3;
+    --neon-glow-color: rgba(255, 255, 255, 0.8);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,7 +27,7 @@ body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--light-bg);
     color: var(--text-color);
-    overflow: hidden;
+    overflow: hidden; /* Mantido como hidden para o body */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -48,8 +57,31 @@ body {
 .card-body { flex-grow: 1; display: flex; flex-direction: column; min-height: 0; }
 
 /* --- Card de Resultado --- */
-.result-card .result-body { position: relative; align-items: center; justify-content: center; text-align: center; background-color: #fff9f9; border-radius: 10px; border: 1px dashed var(--primary-red); overflow: hidden; }
-#display-area { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding: clamp(10px, 2vw, 20px); }
+.result-card .result-body {
+    position: relative;
+    display: flex; /* MUDADO para flex */
+    flex-direction: column; /* MUDADO para coluna */
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: #fff9f9;
+    border-radius: 10px;
+    border: 1px dashed var(--primary-red);
+    overflow: hidden; /* VOLTOU para hidden para conter o spinner e seu brilho */
+    flex-grow: 1; /* Permite que o body do card ocupe o espaço disponível */
+}
+
+#display-area { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    width: 100%; 
+    flex-grow: 1; /* Ocupa o máximo de altura possível */
+    padding: clamp(10px, 2vw, 20px); 
+    position: relative; /* Necessário para posicionar o spinner */
+}
+
 .result-card .large-icon { font-size: clamp(3.5em, 7vh, 6em); color: #e6b30e; }
 #winner-info-container { display: flex; flex-direction: column; gap: clamp(5px, 1.5vh, 15px); width: 100%; margin-top: clamp(10px, 2vh, 20px); }
 .initial-message { font-size: clamp(1.5em, 3vw, 2.5em); font-weight: 600; color: var(--heading-color); }
@@ -57,29 +89,90 @@ body {
 .info-value.name { font-size: clamp(2em, 4.5vw, 4.5em); font-weight: 900; color: var(--primary-red); }
 
 /* --- Tarjas --- */
-.cover { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #615f5f; border-radius: 8px; transition: transform 0.5s ease-in-out; transform-origin: left; }
+.cover { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #6d6a6a; border-radius: 8px; transition: transform 0.5s ease-in-out; transform-origin: left; }
 .cover.revealed { transform: scaleX(0); }
 
-/* --- SPINNER RGB (LEVE E ESTÁVEL) --- */
+/* ========================================================================= */
+/* --- SPINNER / ROLETA COLORIDA (VERSÃO CORRIGIDA E INTEGRADA) --- */
+/* ========================================================================= */
+
+.spinner-container {
+    position: relative;
+    width: 100%; 
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px; /* Padding para o brilho não ser cortado */
+    box-sizing: border-box;
+}
+
+/* O PONTEIRO ESTÁTICO AGORA PERTENCE AO CONTAINER E FICARÁ PARADO */
+.spinner-container::after {
+    content: '';
+    position: absolute;
+    top: 0; /* Alinhado ao topo do container */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 28px;
+    background-color: #333;
+    /* Triângulo apontando para dentro (para baixo) */
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+    z-index: 20; /* Garante que fique acima de tudo */
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+}
+
 .spinner {
-    width: clamp(100px, 12vmax, 150px);
-    height: clamp(100px, 12vmax, 150px);
-    border: 8px solid transparent;
+    /* --- Variáveis --- */
+    --center-circle-size: 18%;
+    --spin-duration: 4s;
+    --border-width-adaptive: max(2px, 0.8vmin);
+    
+    --color-1: var(--neon-magenta); --color-2: var(--neon-cyan); --color-3: var(--neon-green);
+    --color-4: var(--neon-yellow); --color-5: var(--neon-orange); --color-6: var(--neon-purple);
+    
+    /* --- Estilos --- */
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 400px;
+    max-height: 400px;
+    aspect-ratio: 1 / 1;
     border-radius: 50%;
-    border-top-color: var(--primary-red);
-    animation: spin 1s linear infinite, color-cycle 4s linear infinite;
+    
+    background: conic-gradient(
+        var(--color-1) 0deg 60deg, var(--color-2) 60deg 120deg,
+        var(--color-3) 120deg 180deg, var(--color-4) 180deg 240deg,
+        var(--color-5) 240deg 300deg, var(--color-6) 300deg 360deg
+    );
+    
+    animation: spin var(--spin-duration) linear infinite;
+    border: var(--border-width-adaptive) solid var(--neon-glow-color);
+    box-shadow: 0 0 15px var(--neon-glow-color), inset 0 0 10px rgba(255, 255, 255, 0.4);
+    transition: transform 0.3s ease-out;
 }
 
-@keyframes spin { 
-    to { transform: rotate(360deg); } 
+/* Círculo central (miolo) */
+.spinner::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--center-circle-size);
+    height: var(--center-circle-size);
+    background-color: var(--white);
+    border-radius: 50%;
+    z-index: 10; 
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes color-cycle {
-    0%   { border-top-color: #D92323; } /* Vermelho */
-    25%  { border-top-color: #2196F3; } /* Azul */
-    50%  { border-top-color: #4CAF50; } /* Verde */
-    75%  { border-top-color: #FFEB3B; } /* Amarelo */
-    100% { border-top-color: #D92323; } /* Volta ao Vermelho */
+/* REMOVIDO: O ::after foi movido do .spinner para o .spinner-container */
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* --- Botões e Listas --- */
