@@ -65,9 +65,7 @@ function showWinner(winner) {
     `;
 }
 
-// --- Lógica de Efeitos e Revelação ---
 
-// ADICIONADO DE VOLTA: Função para os fogos de artifício
 function fireFireworks() {
     const duration = 5 * 1000;
     const animationEnd = Date.now() + duration;
