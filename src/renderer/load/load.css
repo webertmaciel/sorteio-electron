@@ -1,13 +1,153 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-:root { --primary-red: #D92323; --primary-red-dark: #A61C1C; --white: #FFFFFF; --light-grey: #f4f4f9; --dark-grey: #495057; --shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Roboto', sans-serif; background-color: var(--light-grey); display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px; }
-.modal-content { background-color: var(--white); padding: 40px; border-radius: 12px; box-shadow: var(--shadow); text-align: center; max-width: 500px; width: 100%; animation: fadeIn 0.5s ease-out; }
-.logo { max-width: 150px; margin-bottom: 24px; }
-h1 { font-size: 2em; color: var(--primary-red); margin-bottom: 8px; }
-p { font-size: 1.1em; color: var(--dark-grey); margin-bottom: 24px; }
+
+:root { 
+    --primary-red: #D92323; 
+    --primary-red-dark: #A61C1C; 
+    --white: #FFFFFF; 
+    --light-grey: #f4f4f9; 
+    --dark-grey: #495057; 
+    --shadow: 0 5px 20px rgba(0, 0, 0, 0.15); 
+}
+
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+body { 
+    font-family: 'Roboto', sans-serif; 
+    background-color: var(--light-grey); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    padding: 20px; 
+    overflow: hidden;
+}
+
+.modal-content { 
+    background-color: var(--white); 
+    padding: clamp(25px, 5vw, 40px);
+    border-radius: 16px; 
+    box-shadow: var(--shadow); 
+    text-align: center; 
+    max-width: 500px; 
+    width: 90vw;
+    z-index: 10;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+.logo { 
+    max-width: clamp(120px, 20vw, 150px);
+    margin-bottom: 24px; 
+}
+
+h1 { 
+    font-size: clamp(1.8em, 4vw, 2.2em);
+    color: var(--primary-red); 
+    margin-bottom: 8px; 
+}
+
+p { 
+    font-size: clamp(1em, 2.5vw, 1.1em);
+    color: var(--dark-grey); 
+    margin-bottom: 24px; 
+}
+
 .hidden { display: none; }
-button { font-size: 16px; font-weight: 500; color: var(--white); background-color: var(--primary-red); border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; transition: background-color 0.2s ease, transform 0.2s ease; }
-button:hover { background-color: var(--primary-red-dark); transform: translateY(-2px); }
-button:disabled { background-color: #cccccc; cursor: not-allowed; transform: none; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+button { 
+    font-size: 1rem; 
+    font-weight: 500; 
+    color: var(--white); 
+    background-color: var(--primary-red); 
+    border: none; 
+    padding: 12px 24px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+}
+
+button:hover { 
+    background-color: var(--primary-red-dark); 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+button:disabled { 
+    background-color: #ccc; 
+    cursor: not-allowed; 
+    transform: none; 
+    box-shadow: none;
+}
+
+@keyframes fadeIn { 
+    from { opacity: 0; transform: scale(0.95); } 
+    to { opacity: 1; transform: scale(1); } 
+}
+
+
+/* --- NOVA ESTRUTURA DE AJUDA NO TOPO --- */
+
+.help-container {
+    position: absolute;
+    top: 25px;
+    right: 35px;
+    z-index: 20;
+}
+
+.help-icon {
+    font-size: clamp(26px, 4vw, 30px);
+    color: #b0b0b0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.help-icon:hover {
+    color: var(--primary-red);
+    transform: scale(1.1);
+}
+
+.tooltip-image {
+    visibility: hidden; 
+    opacity: 0;
+    position: absolute;
+    top: calc(100% + 15px); /* Posiciona abaixo do ícone, com 15px de espaço */
+    right: 0; /* Alinha a borda direita do balão com a do ícone */
+    
+    padding: 15px;
+    background-color: var(--white);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    border: 1px solid #e0e0e0;
+    
+    /* O balão se ajusta ao conteúdo, com um máximo de 90% da tela ou 500px */
+    width: max-content;
+    max-width: min(90vw, 500px);
+    
+    transition: opacity 0.3s ease, transform 0.2s ease;
+    transform: translateY(10px); /* Efeito de animação */
+    z-index: 30;
+}
+
+.help-container:hover .tooltip-image {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0); /* Estado final da animação */
+}
+
+.tooltip-image img {
+    display: block;
+    width: 100%; /* Imagem sempre ocupa 100% da largura do balão */
+    height: auto; 
+    border-radius: 4px;
+}
+
+.tooltip-caption {
+    font-size: clamp(0.85em, 2vw, 0.95em) !important;
+    color: #777 !important;
+    margin-top: 10px !important;
+    margin-bottom: 0 !important;
+    text-align: center !important;
+}

@@ -113,11 +113,33 @@ body {
     position: relative;
 }
 
-.result-card .large-icon { font-size: clamp(3.5em, 7vh, 6em); color: #e6b30e; }
+.result-card .large-icon { 
+    /* Mínimo de 4em, ideal de 10vw, máximo de 7em */
+    font-size: clamp(4em, 10vw, 7em); 
+    color: #e6b30e; 
+}
 #winner-info-container { display: flex; flex-direction: column; gap: clamp(5px, 1.5vh, 15px); width: 100%; margin-top: clamp(10px, 2vh, 20px); }
+/* --- Card de Resultado --- */
+/* ... outras regras ... */
 .initial-message { font-size: clamp(1.5em, 3vw, 2.5em); font-weight: 600; color: var(--heading-color); }
-.info-value { font-size: clamp(1.1em, 2vw, 1.8em); font-weight: 500; color: var(--text-color); line-height: 1.4; position: relative; padding: 5px 10px; }
-.info-value.name { font-size: clamp(2em, 4.5vw, 4.5em); font-weight: 900; color: var(--primary-red); }
+
+/* --- CORREÇÃO DE TEXTO RESPONSIVO --- */
+.info-value { 
+    /* Mínimo de 1em, ideal de 2vw, máximo de 1.8em */
+    font-size: clamp(1em, 2vw, 1.8em); 
+    font-weight: 500; 
+    color: var(--text-color); 
+    line-height: 1.4; 
+    position: relative; 
+    padding: 5px 10px; 
+}
+
+.info-value.name { 
+    /* Mínimo de 1.5em, ideal de 4.5vw, máximo de 4em */
+    font-size: clamp(1.5em, 4.5vw, 4em); 
+    font-weight: 900; 
+    color: var(--primary-red); 
+}
 
 /* --- Tarjas --- */
 .cover { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #6d6a6a; border-radius: 8px; transition: transform 0.5s ease-in-out; transform-origin: left; }

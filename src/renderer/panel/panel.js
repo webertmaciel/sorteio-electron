@@ -45,7 +45,7 @@ function showInitialState() {
 }
 
 function showSpinner() {
-    displayArea.innerHTML = `<div class="spinner"></div>`;
+    displayArea.innerHTML = `<strong><p>carregando...</p></strong><div class="spinner"></div>`;
 }
 
 function showWinner(winner) {
@@ -53,7 +53,7 @@ function showWinner(winner) {
         <i class="fas fa-trophy large-icon hidden"></i>
         <div id="winner-info-container">
             <p class="info-value">
-                ${winner.Unidade || 'N/A'}<span class="cover"></span>
+                <strong>${winner.Unidade || 'N/A'}<span class="cover"></span></strong>
             </p>
             <p class="info-value">
                 ${winner.Função || 'N/A'}<span class="cover"></span>
