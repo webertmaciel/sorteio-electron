@@ -53,10 +53,10 @@ function showWinner(winner) {
         <i class="fas fa-trophy large-icon hidden"></i>
         <div id="winner-info-container">
             <p class="info-value">
-                ${winner.Sede || 'N/A'}<span class="cover"></span>
+                ${winner.Unidade || 'N/A'}<span class="cover"></span>
             </p>
             <p class="info-value">
-                ${winner.Cargo || 'N/A'}<span class="cover"></span>
+                ${winner.Função || 'N/A'}<span class="cover"></span>
             </p>
             <p class="info-value name">
                 ${winner.Nome} ${winner.Sobrenome || ''}<span class="cover"></span>
