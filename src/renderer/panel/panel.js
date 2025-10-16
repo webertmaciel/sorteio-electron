@@ -11,7 +11,42 @@ const participantsList = document.getElementById('participants-list');
 const winnersList = document.getElementById('winners-list');
 const displayArea = document.getElementById('display-area');
 
-// --- Funções de Controle da Interface ---
+// --- NOVA FUNÇÃO PARA AJUSTE DINÂMICO DA FONTE ---
+function adjustWinnerFontSize() {
+    const container = document.getElementById('display-area');
+    if (!container) return;
+
+    const icon = container.querySelector('.large-icon');
+    const infoValues = container.querySelectorAll('.info-value');
+    const nameValue = container.querySelector('.info-value.name');
+
+    // Usa a LARGURA do container como base para o cálculo
+    const containerWidth = container.offsetWidth;
+
+    if (icon) {
+        // O tamanho do ícone será 25% da largura do container
+        const iconSize = containerWidth * 0.25;
+        icon.style.fontSize = `${iconSize}px`;
+    }
+    
+    if (infoValues.length > 0) {
+        // O tamanho da fonte de "Unidade" e "Função" será 5% da largura
+        const infoSize = containerWidth * 0.05;
+        infoValues.forEach(el => {
+            // Aplica o tamanho apenas se não for o nome principal
+            if (!el.classList.contains('name')) {
+                el.style.fontSize = `${infoSize}px`;
+            }
+        });
+    }
+
+    if (nameValue) {
+        // O tamanho do nome do ganhador será 12% da largura
+        const nameSize = containerWidth * 0.12;
+        nameValue.style.fontSize = `${nameSize}px`;
+    }
+}
+
 
 function updateUI(updateWinnersListFlag = true) {
     participantsList.innerHTML = '';
@@ -42,10 +77,12 @@ function showInitialState() {
             <p class="initial-message">Clique em "Iniciar Sorteio" para começar</p>
         </div>
     `;
+    // Chama a função de ajuste após criar o conteúdo
+    setTimeout(adjustWinnerFontSize, 0);
 }
 
 function showSpinner() {
-    displayArea.innerHTML = `<strong><p>carregando...</p></strong><div class="spinner"></div>`;
+    displayArea.innerHTML = `<strong><p>Carregando...</p></strong><div class="spinner"></div>`;
 }
 
 function showWinner(winner) {
@@ -53,7 +90,7 @@ function showWinner(winner) {
         <i class="fas fa-trophy large-icon hidden"></i>
         <div id="winner-info-container">
             <p class="info-value">
-                <strong>${winner.Unidade || 'N/A'}<span class="cover"></span></strong>
+                ${winner.Unidade || 'N/A'}<span class="cover"></span>
             </p>
             <p class="info-value">
                 ${winner.Função || 'N/A'}<span class="cover"></span>
@@ -63,6 +100,8 @@ function showWinner(winner) {
             </p>
         </div>
     `;
+    // Chama a função de ajuste após criar o conteúdo
+    setTimeout(adjustWinnerFontSize, 0);
 }
 
 
@@ -70,9 +109,7 @@ function fireFireworks() {
     const duration = 5 * 1000;
     const animationEnd = Date.now() + duration;
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
-
     function randomInRange(min, max) { return Math.random() * (max - min) + min; }
-
     const interval = setInterval(function() {
         const timeLeft = animationEnd - Date.now();
         if (timeLeft <= 0) return clearInterval(interval);
@@ -93,13 +130,9 @@ function handleReveal() {
     if (revealStep >= covers.length) {
         isRevealPhase = false;
         document.removeEventListener('keydown', onKeyDown);
-        
         window.api.updateWinnersFile(winners);
         updateUI(true);
-
         displayArea.querySelector('.large-icon')?.classList.remove('hidden');
-        
-        // ADICIONADO DE VOLTA: Chamada para os fogos de artifício
         fireFireworks();
     }
 }
@@ -111,30 +144,22 @@ const onKeyDown = (event) => {
     }
 };
 
-// --- Lógica Principal do Sorteio ---
-
 btnDraw.addEventListener('click', () => {
     if (participants.length === 0) return;
-
     isRevealPhase = true;
     btnDraw.disabled = true;
     btnReset.disabled = true;
     showSpinner();
-
     const randomIndex = Math.floor(Math.random() * participants.length);
     const winner = participants[randomIndex];
-    
     setTimeout(() => {
         participants.splice(randomIndex, 1);
         winners.push(winner);
-        
         showWinner(winner);
         updateUI(false); 
-        
         revealStep = 0;
         btnReset.disabled = false;
         document.addEventListener('keydown', onKeyDown);
-
     }, 3000);
 });
 
@@ -143,7 +168,10 @@ btnReset.addEventListener('click', () => {
     window.api.resetApp();
 });
 
-// --- Inicialização ---
+// --- INICIALIZAÇÃO E LISTENER DE REDIMENSIONAMENTO ---
+
+// Roda a função de ajuste sempre que a janela mudar de tamanho
+window.addEventListener('resize', adjustWinnerFontSize);
 
 async function initialize() {
     try {
