@@ -11,42 +11,45 @@ const participantsList = document.getElementById('participants-list');
 const winnersList = document.getElementById('winners-list');
 const displayArea = document.getElementById('display-area');
 
-// --- NOVA FUNÇÃO PARA AJUSTE DINÂMICO DA FONTE ---
+// --- FUNÇÃO DE AJUSTE DE FONTE CORRIGIDA E OTIMIZADA ---
 function adjustWinnerFontSize() {
     const container = document.getElementById('display-area');
     if (!container) return;
 
     const icon = container.querySelector('.large-icon');
-    const infoValues = container.querySelectorAll('.info-value');
     const nameValue = container.querySelector('.info-value.name');
+    const otherInfoValues = container.querySelectorAll('.info-value:not(.name)');
+    const initialMessage = container.querySelector('.initial-message');
 
-    // Usa a LARGURA do container como base para o cálculo
-    const containerWidth = container.offsetWidth;
+    const baseContainer = container.parentElement;
+    if (!baseContainer) return;
 
-    if (icon) {
-        // O tamanho do ícone será 25% da largura do container
-        const iconSize = containerWidth * 0.25;
-        icon.style.fontSize = `${iconSize}px`;
-    }
-    
-    if (infoValues.length > 0) {
-        // O tamanho da fonte de "Unidade" e "Função" será 5% da largura
-        const infoSize = containerWidth * 0.05;
-        infoValues.forEach(el => {
-            // Aplica o tamanho apenas se não for o nome principal
-            if (!el.classList.contains('name')) {
-                el.style.fontSize = `${infoSize}px`;
-            }
-        });
+    // Usa a menor dimensão (altura ou largura) como base
+    const baseSize = Math.min(baseContainer.clientWidth, baseContainer.clientHeight);
+    const usableSize = baseSize * 0.9; // Fator de segurança
+
+    if (icon) icon.style.fontSize = `${usableSize * 0.25}px`;
+    if (initialMessage) initialMessage.style.fontSize = `${usableSize * 0.10}px`;
+
+    if (otherInfoValues.length > 0) {
+        const infoSize = usableSize * 0.06;
+        otherInfoValues.forEach(el => el.style.fontSize = `${infoSize}px`);
     }
 
     if (nameValue) {
-        // O tamanho do nome do ganhador será 12% da largura
-        const nameSize = containerWidth * 0.12;
-        nameValue.style.fontSize = `${nameSize}px`;
+        // 1. Define um tamanho de fonte inicial generoso
+        let currentFontSize = usableSize * 0.15;
+        nameValue.style.fontSize = `${currentFontSize}px`;
+
+        // 2. Verifica se o texto está vazando (verticalmente ou horizontalmente)
+        // e reduz a fonte até caber.
+        const minFontSize = 10; // Tamanho mínimo para não sumir
+        while ((nameValue.scrollHeight > nameValue.clientHeight || nameValue.scrollWidth > nameValue.clientWidth) && currentFontSize > minFontSize) {
+            currentFontSize--; // Reduz 1px
+            nameValue.style.fontSize = `${currentFontSize}px`;
+        }
     }
 }
-
 
 function updateUI(updateWinnersListFlag = true) {
     participantsList.innerHTML = '';
@@ -77,21 +80,20 @@ function showInitialState() {
             <p class="initial-message">Clique em "Iniciar Sorteio" para começar</p>
         </div>
     `;
-    // Chama a função de ajuste após criar o conteúdo
     setTimeout(adjustWinnerFontSize, 0);
 }
 
 function showSpinner() {
-    displayArea.innerHTML = `<strong><p>Carregando...</p></strong><div class="spinner"></div>`;
+    displayArea.innerHTML = `<strong><p>Carregando...</p></strong><div class="spinner-container"><div class="spinner"></div></div>`;
 }
 
 function showWinner(winner) {
     displayArea.innerHTML = `
         <i class="fas fa-trophy large-icon hidden"></i>
         <div id="winner-info-container">
-            <p class="info-value">
+            <strong><p class="info-value">
                 ${winner.Unidade || 'N/A'}<span class="cover"></span>
-            </p>
+            </strong></p>
             <p class="info-value">
                 ${winner.Função || 'N/A'}<span class="cover"></span>
             </p>
@@ -100,12 +102,12 @@ function showWinner(winner) {
             </p>
         </div>
     `;
-    // Chama a função de ajuste após criar o conteúdo
     setTimeout(adjustWinnerFontSize, 0);
 }
 
-
 function fireFireworks() {
+    const audio = new Audio('../../assets/fireworks.mp3');
+    audio.play();
     const duration = 5 * 1000;
     const animationEnd = Date.now() + duration;
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
@@ -117,6 +119,10 @@ function fireFireworks() {
         confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
         confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
     }, 250);
+    setTimeout(() => {
+        audio.pause();
+        audio.currentTime = 0; 
+    }, duration);
 }
 
 function handleReveal() {
@@ -156,7 +162,7 @@ btnDraw.addEventListener('click', () => {
         participants.splice(randomIndex, 1);
         winners.push(winner);
         showWinner(winner);
-        updateUI(false); 
+        updateUI(false);
         revealStep = 0;
         btnReset.disabled = false;
         document.addEventListener('keydown', onKeyDown);
@@ -168,9 +174,6 @@ btnReset.addEventListener('click', () => {
     window.api.resetApp();
 });
 
-// --- INICIALIZAÇÃO E LISTENER DE REDIMENSIONAMENTO ---
-
-// Roda a função de ajuste sempre que a janela mudar de tamanho
 window.addEventListener('resize', adjustWinnerFontSize);
 
 async function initialize() {
