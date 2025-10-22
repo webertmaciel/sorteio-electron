@@ -6,7 +6,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="load.css">
 </head>
-<body>
+<!-- A classe "draggable" permite arrastar a janela por qualquer área vazia -->
+<body class="draggable">
+    <!-- NOVO: BOTÕES DE CONTROLE DA JANELA -->
+<div class="window-controls">
+    <button id="btn-minimize"><i class="fas fa-window-minimize"></i></button>
+    <button id="btn-maximize"><i class="far fa-square"></i></button> <!-- Botão de Maximizar -->
+    <button id="btn-close"><i class="fas fa-times"></i></button>
+</div>
+
     <div class="help-container">
         <i class="fas fa-question-circle help-icon"></i>
         <div class="tooltip-image">

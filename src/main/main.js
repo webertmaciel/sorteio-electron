@@ -3,9 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const xlsx = require('xlsx');
 
-// --- CORREÇÃO DEFINITIVA PARA O ERRO DE GPU ---
 app.disableHardwareAcceleration();
-// ---------------------------------------------
 
 let mainWindow;
 
@@ -19,11 +17,14 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    frame: false,
     icon: path.join(__dirname, '..', '..', 'build', 'icon.ico'),
     webPreferences: {
       preload: path.join(__dirname, '..', 'preload', 'preload.js'),
     },
   });
+
+  mainWindow.setMenu(null);
 
   if (fs.existsSync(participantsJsonPath)) {
     mainWindow.loadFile(path.join(__dirname, '..', 'renderer', 'panel', 'panel.html'));
@@ -34,41 +35,75 @@ function createWindow() {
 
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
+app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
-ipcMain.handle('select-file', async () => {
-  const { canceled, filePaths } = await dialog.showOpenDialog({
-    title: 'Selecione a planilha de participantes',
-    properties: ['openFile'], filters: [{ name: 'Planilhas Excel', extensions: ['xls', 'xlsx'] }],
+// --- CORREÇÃO AQUI: Todos os listeners de janela juntos ---
+ipcMain.on('minimize-window', () => { mainWindow.minimize(); });
+ipcMain.on('close-window', () => { mainWindow.close(); });
+ipcMain.on('maximize-window', () => {
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize();
+  } else {
+    mainWindow.maximize();
+  }
+});
+// --- FIM DA CORREÇÃO ---
+
+
+ipcMain.handle('open-file-dialog', async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile'],
+    filters: [{ name: 'Excel Files', extensions: ['xlsx', 'xls'] }],
   });
-  if (canceled || filePaths.length === 0) return { success: false };
+
+  if (result.canceled || result.filePaths.length === 0) {
+    return { success: false, error: 'Nenhum arquivo selecionado.' };
+  }
+
+  const filePath = result.filePaths[0];
+
   try {
-    const filePath = filePaths[0];
     const workbook = xlsx.readFile(filePath);
-    const firstSheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[firstSheetName];
-    const dataAsArrays = xlsx.utils.sheet_to_json(sheet, { header: 1 });
-
-    // MUDANÇA 1: Começa a ler os dados da segunda linha (índice 1), pulando apenas o cabeçalho.
-    const rows = dataAsArrays.slice(1);
-
-    let idCounter = 1;
-
-    // MUDANÇA 2: Renomeia 'Sede' para 'Unidade' e 'Cargo' para 'Função'.
-    const participants = rows.map(row => ({
-      id: idCounter++,
-      Nome: row[0],       // Coluna A
-      Sobrenome: row[1],  // Coluna B
-      Unidade: row[2],    // Coluna C
-      Função: row[3]      // Coluna D
-    })).filter(p => p.Nome && String(p.Nome).trim() !== '');
-
-    if (participants.length === 0) throw new Error('Nenhum participante válido foi encontrado na planilha.');
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(sheet, { header: 1 });
+    
     if (!fs.existsSync(dataFolderPath)) fs.mkdirSync(dataFolderPath, { recursive: true });
+    if (!fs.existsSync(winnersFolderPath)) fs.mkdirSync(winnersFolderPath, { recursive: true });
+
+    const participants = data
+      .slice(1)
+      .map((row, index) => {
+        if (!row || typeof row[0] === 'undefined' || row[0] === null || String(row[0]).trim() === '') {
+          return null;
+        }
+        
+        const fullName = String(row[0]).trim();
+        const nameParts = fullName.split(' ');
+        const Nome = nameParts.shift();
+        const Sobrenome = nameParts.join(' ');
+
+        return {
+          id: index + 1,
+          Nome: Nome,
+          Sobrenome: Sobrenome,
+          Função: row[1] ? String(row[1]).trim() : 'Não informado',
+          Unidade: row[2] ? String(row[2]).trim() : 'Não informada',
+        };
+      })
+      .filter(p => p !== null);
+
+    if (participants.length === 0) {
+      return { success: false, error: 'A planilha está vazia ou não contém nomes válidos na primeira coluna.' };
+    }
+
     fs.writeFileSync(participantsJsonPath, JSON.stringify(participants, null, 2));
+    
     await mainWindow.loadFile(path.join(__dirname, '..', 'renderer', 'panel', 'panel.html'));
     return { success: true };
+
   } catch (error) {
-    return { success: false, error: error.message };
+    return { success: false, error: `Erro ao processar o arquivo: ${error.message}` };
   }
 });
 
@@ -78,9 +113,9 @@ ipcMain.handle('get-participants', () => {
       const jsonData = fs.readFileSync(participantsJsonPath, 'utf-8');
       return { success: true, data: JSON.parse(jsonData) };
     }
-    return { success: false, error: 'Arquivo de dados de professores não encontrado.' };
+    return { success: false, error: 'Arquivo de dados não encontrado.' };
   } catch (error) {
-    return { success: false, error: `Falha ao ler o arquivo de professores: ${error.message}` };
+    return { success: false, error: `Falha ao ler o arquivo: ${error.message}` };
   }
 });
 
@@ -104,12 +139,9 @@ ipcMain.handle('reset-app', async () => {
 
 ipcMain.handle('update-winners-file', (event, winners) => {
   try {
-    if (!fs.existsSync(winnersFolderPath)) {
-      fs.mkdirSync(winnersFolderPath, { recursive: true });
-    }
     fs.writeFileSync(winnersJsonPath, JSON.stringify(winners, null, 2));
     return { success: true };
   } catch (error) {
-    return { success: false, error: error.message };
+    return { success: false, error: `Erro ao salvar ganhadores: ${error.message}` };
   }
 });

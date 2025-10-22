@@ -11,7 +11,6 @@ const participantsList = document.getElementById('participants-list');
 const winnersList = document.getElementById('winners-list');
 const displayArea = document.getElementById('display-area');
 
-// --- FUNÇÃO DE AJUSTE DE FONTE CORRIGIDA E OTIMIZADA ---
 function adjustWinnerFontSize() {
     const container = document.getElementById('display-area');
     if (!container) return;
@@ -24,9 +23,8 @@ function adjustWinnerFontSize() {
     const baseContainer = container.parentElement;
     if (!baseContainer) return;
 
-    // Usa a menor dimensão (altura ou largura) como base
     const baseSize = Math.min(baseContainer.clientWidth, baseContainer.clientHeight);
-    const usableSize = baseSize * 0.9; // Fator de segurança
+    const usableSize = baseSize * 0.9;
 
     if (icon) icon.style.fontSize = `${usableSize * 0.25}px`;
     if (initialMessage) initialMessage.style.fontSize = `${usableSize * 0.10}px`;
@@ -37,15 +35,12 @@ function adjustWinnerFontSize() {
     }
 
     if (nameValue) {
-        // 1. Define um tamanho de fonte inicial generoso
         let currentFontSize = usableSize * 0.15;
         nameValue.style.fontSize = `${currentFontSize}px`;
 
-        // 2. Verifica se o texto está vazando (verticalmente ou horizontalmente)
-        // e reduz a fonte até caber.
-        const minFontSize = 10; // Tamanho mínimo para não sumir
+        const minFontSize = 10;
         while ((nameValue.scrollHeight > nameValue.clientHeight || nameValue.scrollWidth > nameValue.clientWidth) && currentFontSize > minFontSize) {
-            currentFontSize--; // Reduz 1px
+            currentFontSize--;
             nameValue.style.fontSize = `${currentFontSize}px`;
         }
     }
@@ -84,7 +79,7 @@ function showInitialState() {
 }
 
 function showSpinner() {
-    displayArea.innerHTML = `<strong><p>Carregando...</p></strong><div class="spinner-container"><div class="spinner"></div></div>`;
+    displayArea.innerHTML = `<strong><p>Sorteando...</p></strong><div class="spinner-container"><div class="spinner"></div></div>`;
 }
 
 function showWinner(winner) {
@@ -203,3 +198,17 @@ async function initialize() {
 }
 
 initialize();
+
+// --- MELHORIA ADICIONADA: Controles da Janela ---
+document.getElementById('btn-minimize').addEventListener('click', () => {
+    window.api.minimizeWindow();
+});
+
+document.getElementById('btn-close').addEventListener('click', () => {
+    window.api.closeWindow();
+});
+
+// Adiciona o listener para o novo botão
+document.getElementById('btn-maximize').addEventListener('click', () => {
+    window.api.maximizeWindow();
+});
